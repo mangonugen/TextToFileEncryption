@@ -39,8 +39,9 @@ public class Encryption {
 	        	        	        
 	        byte[] plainText = originalString.getBytes(); //get byte from message
 	        
+			//Create triple DES cipher instance
 	        Cipher c3des = create3DesCipher(key, iv, Cipher.ENCRYPT_MODE); 
-	        
+	        //Writing the cipher to the file
 	        try(CipherOutputStream cos = new CipherOutputStream(fos, c3des)) {
 	        	cos.write(plainText, 0, plainText.length);
 	        }			
@@ -66,12 +67,14 @@ public class Encryption {
 			String key = Strings.isNullOrEmpty(saltKey) ? SaltKey : saltKey; //need to be 24 bytes
 	        String iv = Strings.isNullOrEmpty(ivKey) ? IvKey : ivKey ; //need to be 8 bytes
 	        
+			//Create triple DES cipher instance
 	        Cipher c3des = create3DesCipher(key, iv, Cipher.DECRYPT_MODE); 
 						
 			try(CipherInputStream cis = new CipherInputStream(fis, c3des)) {		        
 		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		    	byte[] buffer = new byte[fis.available()];
 		    	int numRead;	    	
+				//Reading and decrypt cipher from the file
 		    	while ((numRead = cis.read(buffer)) >= 0) {
 		    		baos.write(buffer, 0, numRead);
 		    	}

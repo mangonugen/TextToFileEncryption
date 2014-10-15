@@ -110,6 +110,8 @@ namespace TextToFileEncryption
                             return tripleDes.CreateEncryptor(keyBytes, ivBytes);
                         case CryptoTransformType.Decrypt:
                             return tripleDes.CreateDecryptor(keyBytes, ivBytes);
+                        default:
+                            return null;
                     }
                 }
             }
@@ -118,8 +120,6 @@ namespace TextToFileEncryption
                 Debug.WriteLine(ex.ToString());
                 throw;
             }
-
-            return null;
         }
 
         /// <summary>
