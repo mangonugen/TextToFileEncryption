@@ -31,15 +31,17 @@ namespace TextToFileEncryption
                 var key = string.IsNullOrEmpty(saltKey) ? SaltKey : saltKey;
                 var iv = string.IsNullOrEmpty(ivKey) ? IvKey : ivKey;
                 
+                //Read the file into stream
                 using(var fsEncrypted = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
+                //Create a DES decryptor from the DES instance.
                 using (var cTransform = Create3DesProvider(CryptoTransformType.Encrypt, key, iv))
+                //Create crypto stream set to read and do a 
+                //DES encryption transform on incoming bytes.
+                using (var cryptoStream = new CryptoStream(fsEncrypted, cTransform, CryptoStreamMode.Write))
                 {
-                    using (var cryptoStream = new CryptoStream(fsEncrypted, cTransform, CryptoStreamMode.Write))
-                    {
-                        //Read in the input file, and then write out to the output file
-                        byte[] bytearrayinput = ASCIIEncoding.UTF8.GetBytes(originalString);
-                        cryptoStream.Write(bytearrayinput, 0, bytearrayinput.Length);
-                    }
+                    //Read in the input file, and then write out to the output file
+                    byte[] bytearrayinput = ASCIIEncoding.UTF8.GetBytes(originalString);
+                    cryptoStream.Write(bytearrayinput, 0, bytearrayinput.Length);
                 }
             }
             catch (Exception ex)
@@ -68,16 +70,13 @@ namespace TextToFileEncryption
                 using(var fsread = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read))
                 //Create a DES decryptor from the DES instance.
                 using (var cTransform = Create3DesProvider(CryptoTransformType.Decrypt, key, iv))
+                //Create crypto stream set to read and do a 
+                //DES decryption transform on incoming bytes.
+                using (var cryptoStream = new CryptoStream(fsread, cTransform, CryptoStreamMode.Read))
+                //Read from the crypto stream
+                using (var sr = new StreamReader(cryptoStream))
                 {
-                    //Create crypto stream set to read and do a 
-                    //DES decryption transform on incoming bytes.
-                    using (var cryptoStream = new CryptoStream(fsread, cTransform, CryptoStreamMode.Read))
-                    {
-                        using (var sr = new StreamReader(cryptoStream))
-                        {
-                            return sr.ReadToEnd();
-                        }
-                    }
+                    return sr.ReadToEnd();
                 }
             }
             catch (Exception ex)
